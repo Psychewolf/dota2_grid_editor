@@ -6,9 +6,11 @@ def pre_proccessing(file_name):
   enga = 0
 
   with open('temp/herojson.json','w+') as file:
+    ## HERO STATS
     r = requests.get('https://api.opendota.com/api/heroStats')
     enga += 1
     json.dump(r.json(),file)
+
   with open('temp/herojson.json','r+') as json_file,open('temp/proced_json.json','w') as outfile:
     heroes = json_file.read().replace('true','"True"')
     outfile.seek(0)
@@ -16,7 +18,7 @@ def pre_proccessing(file_name):
     outfile.truncate()
   with open('temp/proced_json.json') as json_file:
     data = json.load(json_file)
-    num_to_lane = {1:"safelane",2:"mid",3:"offlane",4:"jungle"}
+    num_to_lane = {1:"safelane",2:"mid",3:"offlane",4:"support",5:"hard_support"}
     for i in data['heroes']:
       if enga == 59:
         print('api limit reached please wait 60 seconds')
@@ -25,7 +27,20 @@ def pre_proccessing(file_name):
         enga = 0
 
       i['winrate'] =  float((i.get('7_win') + i.get('8_win')) / (i.get('7_pick') + i.get('8_pick'))) * 100
-      i['lane'] = pre_proccessing_2(i.get('id'),file_name)
+      lane = pre_proccessing_2(i.get('id'),file_name)
+      if lane == 1:
+        if 'Carry' in i['roles']:
+          i['lane'] = lane
+        else:
+          i['lane'] = 5
+      elif lane == 3:
+        if 'Support' in i['roles']:
+          i['lane'] = 4
+        else:
+          i['lane'] = lane
+      else:
+        i['lane'] = lane
+          
       i['main_role'] = str(num_to_lane.get(i.get('lane')))
       print(i['main_role'],i['lane'])
       print(f'sending request for {i["localized_name"]}')
@@ -33,11 +48,12 @@ def pre_proccessing(file_name):
   with open(file_name,'w') as json_file:
     df = pd.DataFrame(data['heroes'])
     ## CSV Editing
-
     df = df.drop(columns=['null_pick','null_win'],axis=1)    
     df.to_csv('heroes_data.csv')
     json.dump(data,json_file,indent = 4)
+    
 
+    
 
 
 
