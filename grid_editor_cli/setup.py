@@ -13,9 +13,9 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Psychewolf/dota2_grid_editor",
     install_requires=[
-   'A',
-   'B'
-]
+   'requests',
+   'pandas'
+		]
     py_modules       = ["cli_grid"],
     entry_points     = """
             [console_scripts]

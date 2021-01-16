@@ -2,8 +2,13 @@
 
 # Installation
 
+If you want easy installation install Command Line Interface, if you want more control install manually.
 
-## Using Manually
+## Command Line Interface
+[Dota 2 Grid Editor CLI](https://pypi.org/project/dota2-grid-editor-cli/)
+
+
+## Using Manually(recommended)
 1. Download as zip
 2. Unzip
 3. Use manual_execute.py to make grids, you can edit manual_execute.py to make changes to your grid.
