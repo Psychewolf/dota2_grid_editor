@@ -6,8 +6,7 @@
 ## Using Manually
 1. Download as zip
 2. Unzip
-3. Edit _USER_DATA.py
-4. Use execute.py to make grids, use data_collector.py to refresh hero stats
+3. Use manual_execute.py to make grids, you can edit manual_execute.py to make changes to your grid.
 
 ```python
 
