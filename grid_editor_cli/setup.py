@@ -1,5 +1,5 @@
 import setuptools
-from pip.req import parse_requirements
+
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
@@ -15,7 +15,7 @@ setuptools.setup(
     install_requires=[
    'requests',
    'pandas'
-		]
+		],
     py_modules       = ["cli_grid"],
     entry_points     = """
             [console_scripts]
