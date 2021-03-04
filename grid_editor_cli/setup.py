@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="dota2_grid_editor_cli",
-    version="1.0.0",
+    version="1.1.0",
     author="psyche_wolf",
     author_email="jaforjaber@gmail.com",
     description="CLI for dota2_grid_editor",

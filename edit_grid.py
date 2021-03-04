@@ -155,75 +155,7 @@ class hero_grid():
 
                 data['configs'][pos].get('categories').append({'category_name':padding+num_to_lane.get(roles[it])+padding,"x_position":x,"y_position":y,"width":width,"height":160,"hero_ids":list(df[df['lane'] == roles[it]].sort_values(sorted_by,ascending=False)['id'])})
             with open(self.dota2_account_id + "/hero_grid_config.json",'w') as json_file:
-              json.dump(data,json_file,indent=4)
-    def collect_data(self):
-        def pre_proccessing_2(hero_id, file_name = ''):
-              r = requests.get(
-                  f'https://api.opendota.com/api/scenarios/laneRoles/?hero_id={hero_id}')
-              heroes = json.dumps(r.json()).replace('true', '"True"')
-              data = json.loads(str('{"heroes":'+f'{heroes}'+'}'))
-              list_of_rows = []
-              df = pd.DataFrame(data['heroes'])
-              # CSV Editing
-              df = df.astype('int64')
-              for x, df2 in df.groupby('lane_role'):
-                list_of_rows.append([int(df2.hero_id.mean()), int(
-                    df2.lane_role.mean()), df2.games.sum(), df2.wins.sum()/df2.games.sum()*100])
-              df = pd.DataFrame(list_of_rows, columns=[
-                                'id', 'lane', 'games', 'winrate'])
-              new_df = pd.DataFrame()
-              for x, y in df.groupby('id'):
-                new_df = new_df.append(y.sort_values('games', ascending=False).iloc[0])
-                if y.sort_values('games', ascending=False).iloc[0]['games'] / 2 < y.sort_values('games', ascending=False).iloc[1]['games']:
-                   new_df = new_df.append(y.sort_values(
-                       'games', ascending=False).iloc[1])
-
-              new_df['lane'] = new_df['lane'].astype('int64')
-              return int(new_df.loc[:, 'lane'].iloc[0])
-
-        enga = 0
-        r = requests.get('https://api.opendota.com/api/heroStats')
-
-        heroes = json.dumps(r.json()).replace('true', '"True"')
-        data = json.loads(str('{"heroes":'+f'{heroes}'+'}'))
-
-        num_to_lane = {1: "safelane", 2: "mid",
-            3: "offlane", 4: "support", 5: "hard_support"}
-
-        for i in data['heroes']:
-          enga+=1
-          if enga == 59:
-            print('api limit reached please wait 60 seconds')
-            sleep(60)
-
-            enga = 0
-
-          i['winrate'] = float((i.get('7_win') + i.get('8_win')) /
-                               (i.get('7_pick') + i.get('8_pick'))) * 100
-          lane = pre_proccessing_2(i.get('id'), 'temp/proced_json.json')
-          if lane == 1:
-            if 'Carry' in i['roles']:
-              i['lane'] = lane
-            else:
-              i['lane'] = 5
-          elif lane == 3:
-            if 'Support' in i['roles']:
-              i['lane'] = 4
-            else:
-              i['lane'] = lane
-          else:
-            i['lane'] = lane
-
-          i['main_role'] = str(num_to_lane.get(i.get('lane')))
-          print(i['main_role'], i['lane'])
-          print(f'sending request for {i["localized_name"]} | {enga}')
-          with open('all_heroes.json','w') as json_file:
-            df = pd.DataFrame(data['heroes'])
-            ## CSV Editing
-            df = df.drop(columns=['null_pick','null_win'],axis=1)    
-            df.to_csv('heroes_data.csv')
-            json.dump(data,json_file,indent = 4)
-        
+              json.dump(data,json_file,indent=4)      
 
     def execute_defaults(self):
         self.role_grid('Rolegrid','winrate','all')   
@@ -231,4 +163,70 @@ class hero_grid():
         self.create_hero_grid('ALL_HEROES_SORTED_BY_WINRATE','winrate','all')
         self.create_hero_grid('YOUR HEROES SORTED_BY_WINRATE','winrate','played')
 
-     
+def collect_data():
+    def pre_proccessing_2(hero_id, file_name = ''):
+          r = requests.get(
+              f'https://api.opendota.com/api/scenarios/laneRoles/?hero_id={hero_id}')
+          heroes = json.dumps(r.json()).replace('true', '"True"')
+          data = json.loads(str('{"heroes":'+f'{heroes}'+'}'))
+          list_of_rows = []
+          df = pd.DataFrame(data['heroes'])
+          # CSV Editing
+          df = df.astype('int64')
+          for x, df2 in df.groupby('lane_role'):
+            list_of_rows.append([int(df2.hero_id.mean()), int(
+                df2.lane_role.mean()), df2.games.sum(), df2.wins.sum()/df2.games.sum()*100])
+          df = pd.DataFrame(list_of_rows, columns=[
+                            'id', 'lane', 'games', 'winrate'])
+          new_df = pd.DataFrame()
+          for x, y in df.groupby('id'):
+            new_df = new_df.append(y.sort_values('games', ascending=False).iloc[0])
+            if y.sort_values('games', ascending=False).iloc[0]['games'] / 2 < y.sort_values('games', ascending=False).iloc[1]['games']:
+               new_df = new_df.append(y.sort_values(
+                   'games', ascending=False).iloc[1])
+
+          new_df['lane'] = new_df['lane'].astype('int64')
+          return int(new_df.loc[:, 'lane'].iloc[0])
+
+    enga = 0
+    r = requests.get('https://api.opendota.com/api/heroStats')
+
+    heroes = json.dumps(r.json()).replace('true', '"True"')
+    data = json.loads(str('{"heroes":'+f'{heroes}'+'}'))
+
+    num_to_lane = {1: "safelane", 2: "mid",
+        3: "offlane", 4: "support", 5: "hard_support"}
+
+    for i in data['heroes']:
+      enga+=1
+      if enga == 55:
+        print('api limit reached please wait 60 seconds')
+        sleep(60)
+
+        enga = 0
+
+      i['winrate'] = float((i.get('7_win') + i.get('8_win')) /
+                           (i.get('7_pick') + i.get('8_pick'))) * 100
+      lane = pre_proccessing_2(i.get('id'), 'temp/proced_json.json')
+      if lane == 1:
+        if 'Carry' in i['roles']:
+          i['lane'] = lane
+        else:
+          i['lane'] = 5
+      elif lane == 3:
+        if 'Support' in i['roles']:
+          i['lane'] = 4
+        else:
+          i['lane'] = lane
+      else:
+        i['lane'] = lane
+
+      i['main_role'] = str(num_to_lane.get(i.get('lane')))
+      print()
+      print(f'sending request for {i["localized_name"]} | {enga}  |  ' ,i['main_role'], i['lane'])
+      with open('all_heroes.json','w') as json_file:
+        df = pd.DataFrame(data['heroes'])
+        ## CSV Editing
+        df = df.drop(columns=['null_pick','null_win'],axis=1)    
+        df.to_csv('heroes_data.csv')
+        json.dump(data,json_file,indent = 4)

@@ -1,4 +1,4 @@
-from edit_grid import hero_grid
+from edit_grid import hero_grid,collect_data
 
 # print(help(hero_grid()))
 
@@ -10,8 +10,8 @@ a = hero_grid('D:/Games/Steam',443187988)
 #        steam location here   dota2 id here
 
 
-#important: you can add parentheses before a.collect_data() so you dont have to collect data everytime you launch, collecting data takes times
-a.collect_data()
+#important: you can add parentheses before collect_data() so you dont have to collect data everytime you launch, collecting data takes times
+collect_data()
 
 
 a.execute_defaults()

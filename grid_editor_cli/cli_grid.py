@@ -3,11 +3,10 @@ import requests
 import pandas as pd
 from time import sleep
 import argparse
-import tempfile
 
-my_parser = argparse.ArgumentParser(description='-loc [steam_location] -id [steam_id]')
-my_parser.add_argument('-loc', action='store', metavar = 'steam_path',type=str)
-my_parser.add_argument('-id', action='store',type = int)
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-loc', action='store', metavar = 'steam_path',type=str,help='-loc steam_location, example: -loc D:\Games\Steam')
+my_parser.add_argument('-id', action='store',type = int,help='-id dota2_account_id, example: -id 70388657')
 
 args = my_parser.parse_args()
 
@@ -16,6 +15,7 @@ class hero_grid():
     def __init__(self, steam_locatio, steam_i):
         self.steam_location = steam_locatio
         self.steam_id = steam_i
+
         self.dota2_account_id = f"{self.steam_location}/userdata/{self.steam_id}/570/remote/cfg"
         player_stats_json = requests.get(
             f'https://api.opendota.com/api/players/{self.steam_id}/heroes')
@@ -70,7 +70,6 @@ class hero_grid():
 
         for i in data['heroes']:
           enga += 1
-
           if enga == 59:
             print('api limit reached please wait 60 seconds')
             sleep(60)
@@ -191,7 +190,7 @@ class hero_grid():
 
             data['configs'][pos].get('categories').append({'category_name': 'Grid made for '+str(
                 self.player_name), "x_position": 630, "y_position": 510, "width": 8, "height": 8, "hero_ids": []})
-            data['configs'][pos].get('categories').append({'category_name': 'Players MMR: ' + str(
+            data['configs'][pos].get('categories').append({'category_name': 'Players Estimated MMR: ' + str(
                 self.player_mmr), "x_position": 630, "y_position": 530, "width": 8, "height": 8, "hero_ids": []})
             data['configs'][pos].get('categories').append(
                 {'category_name': 'https://github.com/Psychewolf/dota2_grid_editor', "x_position": 630, "y_position": 550, "width": 8, "height": 8, "hero_ids": []})
